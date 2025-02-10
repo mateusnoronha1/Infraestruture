@@ -1,0 +1,4 @@
+$usuarios_F = Get-ADUser -Filter "Enabled -eq 'False'" -Properties SamAccountName,Name,Created,whenChanged,Department,Enabled -SearchBase "OU=hospital unimed,DC=araruama,DC=unimed,DC=com,DC=br" | select SamAccountName,Name,Created,@{N='Inatived';E={$_.whenChanged}},Department,Enabled
+$usuarios_F| Export-Csv -Path "/home/hospital/airflow/dados/usuarios_ad_hospital.csv" -Force -NoTypeInformation
+$usuarios_T = Get-ADUser -Filter "Enabled -eq 'True'" -Properties SamAccountName,Name,Created,whenChanged,Department,Enabled -SearchBase "OU=hospital unimed,DC=araruama,DC=unimed,DC=com,DC=br" | select SamAccountName,Name,Created,{"NAN"},Department,Enabled
+$usuarios_T| Export-Csv -Path "/home/hospital/airflow/dados/usuarios_ad_hospital.csv" -Force -NoTypeInformation -Append

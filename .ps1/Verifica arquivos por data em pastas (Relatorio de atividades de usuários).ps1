@@ -1,0 +1,2 @@
+# Esse comando verifica e mostra na tela os arquivos que foram modificados por data, serve para comprovar se teve atividades do usuário no dia selecionado
+Get-ChildItem -File | Where-Object { $_.LastWriteTime.Date -eq '2024-09-23' } | Sort-Object LastWriteTime | Format-Table Name, LastWriteTime -AutoSize
