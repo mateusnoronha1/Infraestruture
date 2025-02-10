@@ -1,0 +1,332 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: d8e9b38ec5f84be396505d4ee15d4901
+      name: 'HUA - Computadores'
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: de0b998dcfe943838fa589362769eeb6
+      template: 'Windows by DanDan'
+      name: 'Windows by DanDan'
+      groups:
+        - name: 'HUA - Computadores'
+        - name: Templates
+      items:
+        - uuid: 1390e73b700c41e18b5a88ec0153bad8
+          name: 'Logs Aplicações Windows'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Application,,"Warning|Error|Failure",,,,]'
+          delay: '10'
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Dandan
+              value: 'Event Logs'
+        - uuid: f743c9b0e31d484ab859be2175d56df9
+          name: 'Logs Segurança Windows'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,"Warning|Error|Failure",,,,]'
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Dandan
+              value: 'Event Logs'
+        - uuid: 78ead14d3a9d46d9a91ae295905fd3ff
+          name: 'Logs Sistemas Windows'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,"Warning|Error|Failure",,,,]'
+          delay: '30'
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Dandan
+              value: 'Event Logs'
+        - uuid: caf891a0d9e34d05a9691e1cae7c046d
+          name: 'Endereço IP'
+          key: net.if.list
+          delay: 30m
+          history: 30d
+          value_type: CHAR
+          trends: '0'
+          inventory_link: HOST_NETWORKS
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var teste = value.search("10.118.2");
+                  var resultado = value.substr(teste, 12);
+                  if (teste ==  -1){
+                  teste = value.search("10.127.0");
+                  resultado = value.substr(teste, 12);
+                  }; 
+                  if (teste ==  -1){
+                  teste = value.search("10.0.28");
+                  resultado = value.substr(teste, 12);
+                  };
+                  if (teste ==  -1){
+                  teste = value.search("10.118.0");
+                  resultado = value.substr(teste, 12);
+                  };
+                  if (teste ==  -1){
+                  teste = value.search("10.112.0");
+                  resultado = value.substr(teste, 12);
+                  }; 
+                  return resultado;
+                  
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: b0da6eb3cbf049bcb14c2eec9fdfce19
+          name: 'Instâncias do cmd.exe'
+          key: 'proc.num["cmd.exe"]'
+          history: 90d
+          description: 'Esse item monitora o número de instâncias do cmd.exe está sendo executado no host.\r\n\r\nEsse controle é essencial para que a máquina não consuma muita memória, processamento e para receber as tarefas do Kaspersky, e também para acesso via psexec.'
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: b9764e955bf1475988fbcd24f9c22c68
+          name: 'Sessões Ativas'
+          key: 'proc.num["explorer.exe"]'
+          history: 90d
+          tags:
+            - tag: Application
+              value: DanDan
+          triggers:
+            - uuid: eddad5c6120e4e559e8df3b163d13293
+              expression: 'last(/Windows by DanDan/proc.num["explorer.exe"],#3)>=3'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Windows by DanDan/proc.num["explorer.exe"],#3)<3'
+              name: 'Usuários Logados'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: e3d57f7e8b0947a4b64fca6660007bae
+          name: 'Usuario Logado'
+          key: 'system.run[%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy ByPass -nologo -Command "(Get-WMIObject -class Win32_ComputerSystem | select username).username"]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: 45ccd307a7bc41b9b31ee48007919e75
+          name: 'Count Endereços Ativos DHCP'
+          key: 'system.run[powershell.exe (Get-DhcpServerv4Lease -ScopeId 10.118.2.0).count]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: DanDan
+              value: DHCP
+        - uuid: a2656c908c384bdca3a93d218d9fb135
+          name: 'Logs Aplicações Windows Impressão'
+          type: ZABBIX_ACTIVE
+          key: 'system.run[powershell.exe -ExecutionPolicy Bypass -File "C:\zabbix\scripts\get-event.ps1"]'
+          delay: '10'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: Dandan
+              value: 'Event Logs'
+        - uuid: a3732211763a4cd6a7ed2d316a309995
+          name: 'Modelo HD'
+          key: 'system.run[wmic diskdrive get model]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: CHASSIS
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var lines = value.split('\n');
+                  if (lines.length > 1) {
+                      return lines[1].trim();
+                  } else {
+                      return null;
+                  }
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: 431517883ba94883b11d7bf7a21fd7fc
+          name: 'Count Usuários Ativos AD'
+          key: users.active
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: DanDan
+              value: AD
+        - uuid: 410f998face643e198751831d566c315
+          name: 'Count Usuarios Inativos AD'
+          key: users.inactive
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: DanDan
+              value: AD
+        - uuid: 16d597b2bfc44192a0184afbb43b51f3
+          name: 'Endereço Mac B'
+          key: 'wmi.getall[root\cimv2,"select MACAddress  from Win32_NetworkAdapterConfiguration Where IPEnabled = True"]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: MACADDRESS_B
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const teste = value.split(",");
+                  var mac = teste[0].replace(/"/g, "").replace(/\]/g, "").replace(/}/g, "");
+                  return mac.replace("{MACAddress:", "").replace("MACAddress:","").replace("[","");
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: edbbdba2dcfa491a990e585925c641ca
+          name: 'Endereço Mac A'
+          key: 'wmi.getall[root\cimv2,"select MACAddress from Win32_NetworkAdapterConfiguration Where IPEnabled = True"]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: MACADDRESS_A
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const teste = value.split(",");
+                  var mac = teste[1].replace(/"/g, "").replace(/\]/g, "").replace(/}/g, "");
+                  return mac.replace("{MACAddress:", "").replace("MACAddress:","");
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: 1eabd80f13b54c5a985e6cce339d7afc
+          name: Fornecedor
+          key: 'wmi.getall[root\cimv2,"select Manufacturer from Win32_ComputerSystem"]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: VENDOR
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const teste = value.split(":");
+                  const fornecedor = teste[1].replace(/"/g, "").replace(/\]/g, "").replace(/}/g, "").split(',')
+                  return fornecedor [0];
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: d3e81a5780af45b9bb5e1e96cee58a92
+          name: 'Modelo do Dispositivo'
+          key: 'wmi.getall[root\cimv2,"select Model from Win32_ComputerSystem"]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: MODEL
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const teste = value.split(":");
+                  const modelo = teste[1].replace(/"/g, "").replace(/\]/g, "").replace(/}/g, "").split(',');
+                  return modelo[0];
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: 381054e7034c4b96ab7fb33e77e91729
+          name: 'Softwares Instalados'
+          key: 'wmi.getall[root\cimv2,"select Name,Version from Win32_Product"]'
+          delay: 6h
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: SOFTWARE_FULL
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var softwares = value.replace("[","").replace("]","");
+                  var listaSoftwares = "";
+                  softwares = softwares.split("},{");
+                  softwares = softwares.sort();
+                  for (i in softwares) {
+                  	listaSoftwares += softwares[i].replace('"Name":"', '').replace('"}','').replace("{}","").replace('","',' - ').replace('Version":"', 'Versão: ').replace('"',"").replace("{","") + "\n";
+                  }
+                  return listaSoftwares;
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: c1ff31e169af471a9389efa25cb3124d
+          name: 'Hardware CPU'
+          key: 'wmi.getall[root\cimv2,"select name from win32_processor"]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const teste = value.split(":");
+                  return teste[1].replace(/"/g, "").replace(/\]/g, "").replace(/}/g, "");
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: e0738a0f40cb49bd9e0e43b1b527e8e4
+          name: 'Número Serial A'
+          key: 'wmi.getall[root\cimv2,"select SerialNumber from Win32_Bios "]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: SERIALNO_A
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const teste = value.split(":");
+                  var serial = teste[1].replace(/"/g, "").replace(/\]/g, "").replace(/}/g, "").split(",");
+                  return serial[0];
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: e9365af3af4d4b10a0cd021b95d236ce
+          name: 'Hardware Detalhado'
+          key: 'wmi.getall[root\cimv2,"select TotalPhysicalMemory from Win32_ComputerSystem"]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          inventory_link: HARDWARE_FULL
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const teste = value.split(":");
+                  var memoria= teste[1].replace(/"/g, "").replace(/\]/g, "").replace(/}/g, "").split(',');
+                  memoria =  Math.round(memoria[0]  / (1024*1024*1024));
+                  var resultado = "Memória Ram: "+ memoria + " GB";
+                  return resultado ;
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: efdeb5a9ea2643dc936c816eca5c49fe
+          name: 'Anti Virus'
+          key: 'wmi.getall[root\\cimv2,"select Name from Win32_Product"]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          status: DISABLED
+      discovery_rules:
+        - uuid: 49a0c6ad45064b98a8dc66a0e0ec0f3d
+          name: 'Replicação AD'
+          key: 'AdReplicacao["discovery"]'
+          delay: 1d
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+      tags:
+        - tag: Application
+          value: DanDan

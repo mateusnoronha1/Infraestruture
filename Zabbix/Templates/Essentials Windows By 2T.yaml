@@ -1,0 +1,350 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 59128964bdad4f8d80e078075f154ffb
+      name: 'HUA - Tecnologia da Informação'
+  templates:
+    - uuid: 5de574b69d5046138eebfc8481085c20
+      template: 'Essentials Windows By 2T'
+      name: 'Essentials Windows By 2T'
+      templates:
+        - name: 'Template OS Windows'
+        - name: 'Windows by DanDan'
+      groups:
+        - name: 'HUA - Tecnologia da Informação'
+      items:
+        - uuid: f35565588a2748b6bd5632a35b17baa7
+          name: 'Kaspersky Status'
+          key: 'service.info[AVP.KES.21.19,state]'
+          history: 90d
+          description: |
+            Kaspersky Endpoint Security Service (KES.21.19)
+            "Fornece proteção ao computador contra vírus, outros aplicativos mal-intencionados e ataques de rede."
+          tags:
+            - tag: Application
+              value: DanDan
+          triggers:
+            - uuid: c07ab75c3d414ce2b1990c16103f4336
+              expression: 'last(/Essentials Windows By 2T/service.info[AVP.KES.21.19,state])=255'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Essentials Windows By 2T/service.info[AVP.KES.21.19,state])=0'
+              name: 'Anti Virus Kaspersky'
+              priority: HIGH
+              description: 'Anti Vírus Kaspersky'
+        - uuid: d870eaa6225048ea8244d2d6527b1256
+          name: 'Kaspersky Seamless Status'
+          key: 'service.info[avpsus.KES.21.19,state]'
+          history: 90d
+          description: |
+            Monitoramento do serviço Kaspersky Seamless Update Service (KES.21.18).
+            Detalhes do serviço : 
+            "Permite instalar e reverter atualizações críticas e aprovadas de módulos de aplicativos."
+          tags:
+            - tag: Application
+              value: DanDan
+          triggers:
+            - uuid: 07ea13a4a9d14ceb858fc639a6f08116
+              expression: 'last(/Essentials Windows By 2T/service.info[avpsus.KES.21.19,state])=255'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Essentials Windows By 2T/service.info[avpsus.KES.21.19,state])=0'
+              name: 'Kaspersky Seamless Update Service'
+              priority: HIGH
+              description: 'Anti Vírus Kaspersky Seamless Update Service (KES.21.9)'
+        - uuid: 4c551d2a9e3141649364b5ca3a720355
+          name: 'Kaspersky SC Network Agent Status'
+          key: 'service.info[klnagent,state]'
+          history: 90d
+          description: |
+            Monitoramento do serviço Kaspersky Security Center Network Agent.
+            Detalhes do serviço : 
+            "O Agente de Rede coordena a interação entre o Servidor de Administração e os aplicativos Kaspersky instalados nos dispositivos."
+          tags:
+            - tag: Application
+              value: DanDan
+          triggers:
+            - uuid: 2680629593eb4a95915212618677e25f
+              expression: 'last(/Essentials Windows By 2T/service.info[klnagent,state])=255'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Essentials Windows By 2T/service.info[klnagent,state])=0'
+              name: 'Kaspersky Security Center Network Agent'
+              priority: HIGH
+              description: 'Anti Vírus Kaspersky Security Center Network Agent'
+        - uuid: 600b0b3ba0434b8b80aa782ece9a6f24
+          name: 'Serviço TighVNC'
+          key: 'service_state[tvnserver]'
+          tags:
+            - tag: Application
+              value: Dandan
+          triggers:
+            - uuid: 067ef149070e4df286345ff6f9df6c66
+              expression: 'last(/Essentials Windows By 2T/service_state[tvnserver])=6 or last(/Essentials Windows By 2T/service_state[tvnserver])=255'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Essentials Windows By 2T/service_state[tvnserver])=0'
+              name: 'Serviço TIghVNC - PARADO'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: 1e49eda71ecd41b596fa1439d162f986
+          name: 'Corrige TighVNC Parado'
+          key: 'system.run[cmd.exe /c net start tvnserver && sc config tvnserver start= auto]'
+          value_type: TEXT
+          trends: '0'
+        - uuid: 198a7e0cae5840c48d790dbef0d50ddf
+          name: 'Verifica Licença Office 2013'
+          key: 'system.run[cscript "C:\program files (x86)\microsoft office\office15\ospp.vbs" /dstatus]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          description: |
+            Esse item faz uma verificação no Script OSPP.VBS do office e retorna a chave de licença caso tenha.
+            Caso não tenha ele informa que não foi reconhecida a licença.
+            
+            *PARA OFFICE 2013*
+          inventory_link: SOFTWARE_APP_B
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var output = value;
+                  var productKey;
+                  var licenseName;
+                  
+                  // Verifica a versão do Office na saída
+                  if (output.includes("Office 14")) { // Office 2010
+                      var lines = output.split('\n');
+                      for (var i = 0; i < lines.length; i++) {
+                          if (lines[i].includes("Last 5 characters of installed product key:")) {
+                              productKey = lines[i].trim().split(':')[1].trim();
+                          } else if (lines[i].includes("LICENSE NAME:")) {
+                              licenseName = lines[i].trim().split(':')[1].trim();
+                          }
+                      }
+                  } else if (output.includes("Office 15") || output.includes("Office 16") || output.includes("Office 17") || output.includes("Office 18") || output.includes("Office 19") || output.includes("Office 20")) {
+                      var lines = output.split('\n');
+                      for (var i = 0; i < lines.length; i++) {
+                          if (lines[i].includes("Last 5 characters of installed product key:")) {
+                              productKey = lines[i].trim().split(':')[1].trim();
+                          } else if (lines[i].includes("LICENSE NAME:")) {
+                              licenseName = lines[i].trim().split(':')[1].trim();
+                          }
+                      }
+                  } else {
+                      productKey = "Versão do Office não reconhecida";
+                      licenseName = "Versão do Office não reconhecida";
+                  }
+                  
+                  return "Product Key: " + productKey + ", License Name: " + licenseName;
+                  
+          tags:
+            - tag: Application
+              value: Dandan
+        - uuid: 75c07959b2b24fb3b0ce6da30d9a9897
+          name: 'Verifica Licença Office 2016 / 2019'
+          key: 'system.run[cscript "C:\Program Files (x86)\Microsoft Office\Office16\ospp.vbs" /dstatus]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          description: |
+            Esse item faz uma verificação no Script OSPP.VBS do office e retorna a chave de licença caso tenha.
+            Caso não tenha ele informa que não foi reconhecida a licença.
+          inventory_link: SOFTWARE_APP_C
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var output = value;
+                  var productKey;
+                  var licenseName;
+                  
+                  // Verifica a versão do Office na saída
+                  if (output.includes("Office 14")) { // Office 2010
+                      var lines = output.split('\n');
+                      for (var i = 0; i < lines.length; i++) {
+                          if (lines[i].includes("Last 5 characters of installed product key:")) {
+                              productKey = lines[i].trim().split(':')[1].trim();
+                          } else if (lines[i].includes("LICENSE NAME:")) {
+                              licenseName = lines[i].trim().split(':')[1].trim();
+                          }
+                      }
+                  } else if (output.includes("Office 15") || output.includes("Office 16") || output.includes("Office 17") || output.includes("Office 18") || output.includes("Office 19") || output.includes("Office 20")) {
+                      var lines = output.split('\n');
+                      for (var i = 0; i < lines.length; i++) {
+                          if (lines[i].includes("Last 5 characters of installed product key:")) {
+                              productKey = lines[i].trim().split(':')[1].trim();
+                          } else if (lines[i].includes("LICENSE NAME:")) {
+                              licenseName = lines[i].trim().split(':')[1].trim();
+                          }
+                      }
+                  } else {
+                      productKey = "Versão do Office não reconhecida";
+                      licenseName = "Versão do Office não reconhecida";
+                  }
+                  
+                  return "Product Key: " + productKey + ", License Name: " + licenseName;
+                  
+          tags:
+            - tag: Application
+              value: Dandan
+        - uuid: 074e759e7651426ca19c4dfc7e1071f3
+          name: 'Verifica Licença Office 2010'
+          key: 'system.run[cscript "C:\program files\microsoft office\office14\ospp.vbs" /dstatus]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          description: |
+            Esse item faz uma verificação no Script OSPP.VBS do office e retorna a chave de licença caso tenha.
+            Caso não tenha ele informa que não foi reconhecida a licença.
+            
+            *PARA OFFICE 2010*
+          inventory_link: SOFTWARE_APP_A
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var output = value;
+                  var productKey;
+                  var licenseName;
+                  
+                  // Verifica a versão do Office na saída
+                  if (output.includes("Office 14")) { // Office 2010
+                      var lines = output.split('\n');
+                      for (var i = 0; i < lines.length; i++) {
+                          if (lines[i].includes("Last 5 characters of installed product key:")) {
+                              productKey = lines[i].trim().split(':')[1].trim();
+                          } else if (lines[i].includes("LICENSE NAME:")) {
+                              licenseName = lines[i].trim().split(':')[1].trim();
+                          }
+                      }
+                  } else if (output.includes("Office 15") || output.includes("Office 16") || output.includes("Office 17") || output.includes("Office 18") || output.includes("Office 19") || output.includes("Office 20")) {
+                      var lines = output.split('\n');
+                      for (var i = 0; i < lines.length; i++) {
+                          if (lines[i].includes("Last 5 characters of installed product key:")) {
+                              productKey = lines[i].trim().split(':')[1].trim();
+                          } else if (lines[i].includes("LICENSE NAME:")) {
+                              licenseName = lines[i].trim().split(':')[1].trim();
+                          }
+                      }
+                  } else {
+                      productKey = "Versão do Office não reconhecida";
+                      licenseName = "Versão do Office não reconhecida";
+                  }
+                  
+                  return "Product Key: " + productKey + ", License Name: " + licenseName;
+                  
+          tags:
+            - tag: Application
+              value: Dandan
+        - uuid: d7bb0f36080f4689baca05da4af79167
+          name: 'Verifica Licença Office 2021'
+          key: 'system.run[cscript "C:\Program Files\Microsoft Office\Office16\ospp.vbs" /dstatus]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          description: |
+            Esse item faz uma verificação no Script OSPP.VBS do office e retorna a chave de licença caso tenha.
+            Caso não tenha ele informa que não foi reconhecida a licença.
+            
+            *PARA OFFICE 2021*
+          inventory_link: SOFTWARE_APP_D
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var output = value;
+                  var productKey;
+                  var licenseName;
+                  
+                  // Verifica a versão do Office na saída
+                  if (output.includes("Office 14")) { // Office 2010
+                      var lines = output.split('\n');
+                      for (var i = 0; i < lines.length; i++) {
+                          if (lines[i].includes("Last 5 characters of installed product key:")) {
+                              productKey = lines[i].trim().split(':')[1].trim();
+                          } else if (lines[i].includes("LICENSE NAME:")) {
+                              licenseName = lines[i].trim().split(':')[1].trim();
+                          }
+                      }
+                  } else if (output.includes("Office 15") || output.includes("Office 16") || output.includes("Office 17") || output.includes("Office 18") || output.includes("Office 19") || output.includes("Office 20")) {
+                      var lines = output.split('\n');
+                      for (var i = 0; i < lines.length; i++) {
+                          if (lines[i].includes("Last 5 characters of installed product key:")) {
+                              productKey = lines[i].trim().split(':')[1].trim();
+                          } else if (lines[i].includes("LICENSE NAME:")) {
+                              licenseName = lines[i].trim().split(':')[1].trim();
+                          }
+                      }
+                  } else {
+                      productKey = "Versão do Office não reconhecida";
+                      licenseName = "Versão do Office não reconhecida";
+                  }
+                  
+                  return "Product Key: " + productKey + ", License Name: " + licenseName;
+                  
+          tags:
+            - tag: Application
+              value: Dandan
+        - uuid: d7129b6da3294bc4992316a6d395a064
+          name: 'Updates Windows Count'
+          key: 'system.run[powershell.exe (Get-Wulist).count]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          description: |
+            Esse item executa um comando em powershell que faz a contagem de Updates Pendentes de Instalação na estação.
+            
+            Essa contagem pode ser vinculada ao WSUS, tendo em vista que somente aparecerá na contagem as atualizações que aparecem como não instaladas.
+            Precisa aprovar o Update no WSUS para poder aparecer na contagem deste item, após a sincronização da máquina com o servidor WSUS.
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: 44e5ea7e1aa5458ea1e35d7b49c75374
+          name: 'Limpa Disco'
+          key: 'system.run[powershell.exe -ExecutionPolicy Bypass -File "C:\zabbix\scripts\Limpa_TEMP.ps1"]'
+          delay: '10'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: Application
+              value: DanDan
+        - uuid: 7e9b920d0297430da04c668ff5547922
+          name: 'Verifica Pasta TighVNC'
+          key: 'vfs.file.exists[C:\Program Files\TightVNC\tvnserver.exe]'
+          tags:
+            - tag: Application
+              value: Dandan
+          triggers:
+            - uuid: 25e1faac5d804f99a2f470f7ad258531
+              expression: 'last(/Essentials Windows By 2T/vfs.file.exists[C:\Program Files\TightVNC\tvnserver.exe])=0'
+              name: 'Arquivo tvnserver.exe não encontrado'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: c0b4a4fce0fe425e86f4ce937bc54be6
+          name: 'Disco livre em Percente %'
+          key: 'vfs.fs.size[C:,pfree]'
+          history: 90d
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: DanDan
+          triggers:
+            - uuid: f5d16b9ab870402a8646406f59f6f499
+              expression: 'last(/Essentials Windows By 2T/vfs.fs.size[C:,pfree])<15'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Essentials Windows By 2T/vfs.fs.size[C:,pfree])>20'
+              name: 'Disco com -15% de espaço Livre'
+              priority: HIGH
+              manual_close: 'YES'
+      tags:
+        - tag: 'Essentials Windows'
+          value: 'By 2T'
+  triggers:
+    - uuid: 1fb7c6281055440fa3aaf7a52e3e77e1
+      expression: 'last(/Essentials Windows By 2T/icmpping)=0'
+      name: Ping_bydandan
+      status: DISABLED
+      priority: DISASTER
+      manual_close: 'YES'
+      tags:
+        - tag: identificar
+          value: bydandan

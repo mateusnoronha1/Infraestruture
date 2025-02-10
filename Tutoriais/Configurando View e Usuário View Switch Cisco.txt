@@ -1,0 +1,29 @@
+→ Habilitar AAA (aaa new-model)
+configure terminal
+aaa new-model
+exit
+write memory
+
+
+→ Ativar o Root View
+enable view
+→ Se este comando não funcionar, tente forçar a ativação manualmente:
+parser view root_view
+secret minhasenha
+
+
+→ Criar a readonly_view
+conf t
+parser view readonly_view
+secret SENHA
+→ Depois, adicione os comandos permitidos:
+commands exec include show mac address-table
+commands exec include show interfaces
+exit
+
+
+→ Criar um Usuário e Associá-lo à View
+username USUARIO privilege 1 password SENHA
+username USUARIO view readonly_view
+
+→ Testar o Acesso

@@ -1,0 +1,81 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: e75361c2486645e2983bad9e1d78328e
+      name: 'Windows Server'
+  templates:
+    - uuid: 7df1af1ad7d64da89f5b8b701ab8459d
+      template: 'Servidor Wsus By 2T'
+      name: 'Servidor Wsus By 2T'
+      groups:
+        - name: 'Windows Server'
+      items:
+        - uuid: cf442e4311fc4fe4954a311a67897105
+          name: 'Processo Wsus Service'
+          key: 'proc.num["WsusService.exe"]'
+          history: 90d
+          tags:
+            - tag: Application
+              value: 'Wsus By 2T'
+        - uuid: b1363dcb4d5449baa8883bfceca4d7e1
+          name: 'Estação que precisam de Atualização'
+          key: 'system.run[powershell (Get-WsusComputer -ComputerUpdateStatus Needed).count]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'Wsus By 2T'
+        - uuid: 5e3ba99227d84047a32ef883331f40ea
+          name: 'Estação Registrada WSUS'
+          key: 'system.run[powershell.exe (Get-WsusComputer -all).count]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          description: 'Item que faz uma contagem de todas as máquinas registradas no servidor WSUS.'
+          tags:
+            - tag: Application
+              value: 'Wsus By 2T'
+        - uuid: fe034ed87b3f4c3ab0735a461298f7b6
+          name: 'Computadores com Updates Falhas ou Necessárias'
+          key: 'system.run[powershell.exe (Get-WsusComputer -ComputerUpdateStatus FailedOrNeeded).count]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'Wsus By 2T'
+        - uuid: d6b9935a8bb94a23af33ed6b337b6662
+          name: 'Estação sem Status'
+          key: 'system.run[powershell.exe (Get-WsusComputer -ComputerUpdateStatus NoStatus).count]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          description: 'Item que verifica computadores sem status avaliado no wsus.'
+          tags:
+            - tag: Application
+              value: 'Wsus By 2T'
+        - uuid: c673cdc0076143028f7f93bd424aa460
+          name: 'Updates críticos desaprovados'
+          key: 'system.run[powershell.exe (Get-WsusUpdate -Classification Critical -Approval Unapproved -Status Any).count]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'Wsus By 2T'
+        - uuid: 3c714a5fe92442b7b80282b11813519d
+          name: 'Estação com Atualização Falha'
+          key: 'system.run[powershell.exe Get-WsusComputer -ComputerUpdateStatus Failed]'
+          history: 90d
+          value_type: TEXT
+          trends: '0'
+          description: 'Item criado para verificar se existem estações com falha na atualização.'
+          preprocessing:
+            - type: STR_REPLACE
+              parameters:
+                - 'No computers available.'
+                - '0'
+          tags:
+            - tag: Application
+              value: 'Wsus By 2T'

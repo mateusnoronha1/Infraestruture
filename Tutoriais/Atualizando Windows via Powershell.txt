@@ -1,0 +1,59 @@
+1- Get-PSRepository              								  						: verifica o repositorio do powershell se está "Trusted" ou "Untrusted". (Caso não exista repositorio, precisa atualizar o powershell e instalar o mesmo)
+2- Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted 						: Altera a politica do repositorio, se estiver "Untrusted" precisamos mudar para "Trusted"
+3- Install-Module PSWindowsUpdate -Verbose						  						: para instalar o módulo de atualização do Windows
+4- Get-WindowsUpdate -Verbose     								  						: para verificar se há atualizações
+5- Install-WindowsUpdate          								  						: para instalar as atualizações disponíveis
+6- Get-WUHistory                  								  						: para exibir as atualizações instaladas
+7- Remove-WindowsUpdate -KBArticleID KBXXXXXXX 					  						: para remover uma atualização específica
+8- Get-WindowsUpdate -Install -AcceptAll -Verbose										: para verificar os updates disponiveis , instalar, aceitar termos, isso tudo de forma verbosa.
+9- Wuauclt.exe /reportnow
+----------Problemas com Powershell-----------------
+Verifique a Política de Execução Atual:
+Get-ExecutionPolicy
+Isso retornará um dos seguintes valores:
+
+Restricted: A execução de scripts está desabilitada e apenas cmdlets essenciais do PowerShell estão disponíveis.
+AllSigned: Somente scripts assinados por um editor confiável podem ser executados.
+RemoteSigned: Scripts locais podem ser executados sem assinatura, mas scripts baixados da internet devem ser assinados por um editor confiável.
+Unrestricted: Todos os scripts podem ser executados, sem restrições.
+
+Alterando a Política de Execução:
+Set-ExecutionPolicy RemoteSigned
+
+Se a segurança é uma grande preocupação para você, considere usar a política AllSigned e aprender a assinar scripts.
+---------------------------------------------------
+
+Comandos para forçar a máquina a puxar updates do WSUS.:
+
+1- net stop wuauserv - Stop Servico de Atualizacao
+2- net start wuauserv - Start Servico de Atualizacao
+3- wuauclt /detectnow - forcar a comunicação com o Wsus
+4- wuauclt.exe /resetauthorization /detectnow - para forçar a detecção
+5- wuauclt.exe /reportnow -  forçar um relatório a fim de verificar se a Data do Último Contato foi atualizada
+
+-----------------------------------------------------
+Comandos de verificação.:
+
+1- Get-WUHistory | Select-Object -First 05	| Format-Table -AutoSize			: Comando para verificar os ultimos 5 updates instalados na máquina
+2- Get-WmiObject -Class "Win32_QuickFixEngineering" | Format-Table -AutoSize	: Comando para verificar mais detalhadamente os updates instalados
+3- Get-ItemProperty -Path 'HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate' | Select-Object WUServer, WUStatusServer		:	Comando para verificar qual é o servidor WSUS que a máquina está se conectando
+
+
+Script para comunicação de máquina e servidor WSUS
+
+net stop wuauserv
+cd C:\Windows\SoftwareDistribution
+ren Download Download.old
+net start wuauserv
+net stop bits
+net start bits
+net stop cryptsvc
+cd C:\Windows\system32
+ren catroot2 catroot2old
+net start cryptsvc
+
+Wuauclt.exe /resetauthorization /detectnow
+
+
+Get-WindowsUpdate -KBArticleID KB5039866 -Install -AcceptAll -Verbose
+

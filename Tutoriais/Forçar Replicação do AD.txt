@@ -1,0 +1,1 @@
+repadmin /replicate SERVIDOR2 SERVIDOR1 DC=XXX,DC=XXX,DC=com,DC=br
