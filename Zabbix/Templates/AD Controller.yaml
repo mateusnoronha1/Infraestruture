@@ -1,0 +1,427 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: a92f52ea92ee4c0dbbd66296c2043e4c
+      template: 'AD Domain Controller by Dandan'
+      name: 'AD Domain Controller by Dandan'
+      groups:
+        - name: Templates
+      items:
+        - uuid: bf7753721cc344f4acee209e194d776b
+          name: 'DCDiag: Advertising'
+          type: ZABBIX_ACTIVE
+          key: 'dcdiag[advertising]'
+          delay: '1800'
+          history: 90d
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: 9cfe9f859a8f460d8b492bdefc4bcdda
+              expression: 'find(/AD Domain Controller by Dandan/dcdiag[advertising],,"like","OK")<>1'
+              name: 'DCDiag: Advertising Check Failed'
+              priority: WARNING
+        - uuid: 8bffb6cc59b84d3fbc4c18adb5625fef
+          name: 'DCDiag: FSMO Check'
+          type: ZABBIX_ACTIVE
+          key: 'dcdiag[fsmocheck]'
+          delay: '1800'
+          history: 90d
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: 97903f8723934aafa8be8c7a6b458aa1
+              expression: 'find(/AD Domain Controller by Dandan/dcdiag[fsmocheck],,"like","OK")<>1'
+              name: 'DCDiag: FSMO Check Failed'
+              priority: WARNING
+        - uuid: db7de09deb4841ed8383d7dfac982197
+          name: 'DCDiag: Machine Account'
+          type: ZABBIX_ACTIVE
+          key: 'dcdiag[machineaccount]'
+          delay: '1800'
+          history: 90d
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: b82caa7815cf49319c59cc5516fe45bf
+              expression: 'find(/AD Domain Controller by Dandan/dcdiag[machineaccount],,"like","OK")<>1'
+              name: 'DCDiag: Machine Account Check Failed'
+              priority: WARNING
+        - uuid: 36172e19c2b1422b8930eed81d9ebee4
+          name: 'DCDiag: Replication'
+          type: ZABBIX_ACTIVE
+          key: 'dcdiag[replications]'
+          delay: '1800'
+          history: 90d
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: 5171826fc4634b3095cea36124b2fbdc
+              expression: 'find(/AD Domain Controller by Dandan/dcdiag[replications],,"like","OK")<>1'
+              name: 'DCDiag: Replication Check Failed'
+              priority: WARNING
+        - uuid: 67dd84f3753c4bdc9c661403d775db30
+          name: 'DCDiag: RID Manager'
+          type: ZABBIX_ACTIVE
+          key: 'dcdiag[ridmanager]'
+          delay: '1800'
+          history: 90d
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: 7c994c21bbf545729a8f018c7111808a
+              expression: 'find(/AD Domain Controller by Dandan/dcdiag[ridmanager],,"like","OK")<>1'
+              name: 'DCDiag: RID Manager Check Failed'
+              priority: WARNING
+        - uuid: d48fe979428747e3baff22148772f720
+          name: 'DCDiag: Services'
+          type: ZABBIX_ACTIVE
+          key: 'dcdiag[services]'
+          delay: '3600'
+          history: 90d
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: 00e43ffb1c414985b19d337d5c03f58f
+              expression: 'find(/AD Domain Controller by Dandan/dcdiag[services],,"like","OK")<>1'
+              name: 'DCDiag: Services Check Failed'
+              priority: WARNING
+        - uuid: 7cb180fd39fe41c784d6d2dfa39cb2c4
+          name: 'Eventos de erro no log de aplicativos'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Application,,"Error"]'
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: DCDiag
+        - uuid: c619ea14b28f4dbe950e9a8db77eaf4d
+          name: 'DFS Replication Log'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[DFS Replication,,"Warning|Error|Failure",,,,]'
+          delay: '30'
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: 7da3d66cdc3740c39b6f9011ce4e3415
+              expression: 'logseverity(/AD Domain Controller by Dandan/eventlog[DFS Replication,,"Warning|Error|Failure",,,,])>1 and nodata(/AD Domain Controller by Dandan/eventlog[DFS Replication,,"Warning|Error|Failure",,,,],60s)<>1'
+              name: 'DFS Replication Log Error'
+              priority: INFO
+        - uuid: e040d10695cf4db39a634d035fd3fe2a
+          name: 'Directory Service Log'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Directory Service,,"Warning|Error|Failure",,,,]'
+          delay: '30'
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: f88fb531c1404fda8321453ca3b9c5d4
+              expression: 'logseverity(/AD Domain Controller by Dandan/eventlog[Directory Service,,"Warning|Error|Failure",,,,])>1 and nodata(/AD Domain Controller by Dandan/eventlog[Directory Service,,"Warning|Error|Failure",,,,],60s)<>1'
+              name: 'Directory Service Log Error'
+              priority: INFO
+        - uuid: 64c0ce8ff58f4b26984b92be4ebd9459
+          name: 'DNS Server Log'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[DNS Server,,"Warning|Error|Failure",,,,]'
+          delay: '30'
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: 3cdba1de29864565af754991dc7c762f
+              expression: 'logseverity(/AD Domain Controller by Dandan/eventlog[DNS Server,,"Warning|Error|Failure",,,,])>1 and nodata(/AD Domain Controller by Dandan/eventlog[DNS Server,,"Warning|Error|Failure",,,,],60s)<>1'
+              name: 'DNS Server Log Error'
+              priority: INFO
+        - uuid: 303e69d6d4434de29b0809524b082ef4
+          name: 'File Replication Service Log'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[File Replication Service,,"Warning|Error|Failure",,,,]'
+          delay: '30'
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: DCDiag
+          triggers:
+            - uuid: 2692996d4c044948994d3c5c4e53ac9e
+              expression: 'logseverity(/AD Domain Controller by Dandan/eventlog[File Replication Service,,"Warning|Error|Failure",,,,])>1 and nodata(/AD Domain Controller by Dandan/eventlog[File Replication Service,,"Warning|Error|Failure",,,,],60s)<>1'
+              name: 'File Replication Service Log Error'
+              priority: INFO
+        - uuid: eb500a968b854b36a02c1e4b41d23e65
+          name: 'IPv4 Datagrams /s'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter[\IPv4\Datagrams/sec]'
+          delay: '30'
+          history: 90d
+          value_type: FLOAT
+          tags:
+            - tag: Application
+              value: Performances
+        - uuid: 8259a5ba6c494f4eb57d556bca571198
+          name: 'DC Authentications kerberos/sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter[\NTDS\Kerberos Authentications, 300]'
+          delay: '300'
+          history: 30d
+          value_type: FLOAT
+          trends: 90d
+          units: A/sec
+          tags:
+            - tag: Application
+              value: Performances
+        - uuid: 9e39a35d20c34ef3a647b44f136e15a3
+          name: 'DC Authentications NTLM/sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter[\NTDS\NTLM Authentications, 300]'
+          delay: '300'
+          history: 30d
+          value_type: FLOAT
+          trends: 90d
+          units: A/sec
+          tags:
+            - tag: Application
+              value: Performances
+        - uuid: 7f694a7dc8f74f589f18ba7dbdf21cac
+          name: 'File read bytes per second'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter[\System\File Read Bytes/sec]'
+          delay: '30'
+          history: 90d
+          value_type: FLOAT
+          units: Bps
+          tags:
+            - tag: Application
+              value: Performances
+        - uuid: 993060e726c5498faa05e02d5fcedc8b
+          name: 'File write bytes per second'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter[\System\File Write Bytes/sec]'
+          delay: '30'
+          history: 90d
+          value_type: FLOAT
+          units: Bps
+          tags:
+            - tag: Application
+              value: Performances
+        - uuid: ffc472935cd24321bde69bc008e9701d
+          name: 'Web Services do Active Directory'
+          key: 'service.info[adws,state]'
+          tags:
+            - tag: Application
+              value: DCDiag
+        - uuid: 05cb0ddf4ebb441e9bfcc731646a84d5
+          name: 'Serviço DNS'
+          key: 'service.info[dns,state]'
+          tags:
+            - tag: Application
+              value: DCDiag
+        - uuid: e3c15bbb4e764bcd95c3a99427195bd6
+          name: 'Kerberos Key Distribution Center'
+          key: 'service.info[kdc,state]'
+          tags:
+            - tag: Application
+              value: DCDiag
+        - uuid: f899c030fd7742c3807ba05af8af2bb1
+          name: 'Serviço de Diretório do AD'
+          key: 'service.info[NTDS,state]'
+          tags:
+            - tag: Application
+              value: DCDiag
+        - uuid: c5593e6cd72a4cc19e7906b05a351321
+          name: 'Service State: DNS Server'
+          type: ZABBIX_ACTIVE
+          key: 'service_state[DNS]'
+          delay: '120'
+          tags:
+            - tag: Application
+              value: Services
+          triggers:
+            - uuid: 5aa9c02a9e244c9a9f51fbe0143a8abc
+              expression: 'avg(/AD Domain Controller by Dandan/service_state[DNS],300s)>0'
+              name: 'Service "DNS Server" Down'
+              priority: AVERAGE
+        - uuid: 88c5d488886e43e48a443058fe4f06a4
+          name: 'Service State: "KDC"'
+          type: ZABBIX_ACTIVE
+          key: 'service_state[kdc]'
+          delay: '300'
+          history: 1d
+          trends: 1d
+          tags:
+            - tag: Application
+              value: Services
+          triggers:
+            - uuid: 0d7b240d82a34abda189d37db3cc2ce7
+              expression: 'last(/AD Domain Controller by Dandan/service_state[kdc])<>0'
+              name: 'Service "KDC" down'
+              priority: AVERAGE
+        - uuid: 8fbdaa743d8d4ec4a5392eacfb6d246e
+          name: 'Service State: Netlogon'
+          type: ZABBIX_ACTIVE
+          key: 'service_state[Netlogon]'
+          delay: '120'
+          tags:
+            - tag: Application
+              value: Services
+          triggers:
+            - uuid: b56897ee2145402fabdcfd1c166a1ae3
+              expression: 'avg(/AD Domain Controller by Dandan/service_state[Netlogon],300s)>0'
+              name: 'Service "Netlogon" Down'
+              priority: AVERAGE
+        - uuid: cbb9bf4e71924427b39d063bbd4b2477
+          name: 'Service State: Remote Procedure Call (RPC)'
+          type: ZABBIX_ACTIVE
+          key: 'service_state[RpcSs]'
+          delay: '120'
+          tags:
+            - tag: Application
+              value: Services
+          triggers:
+            - uuid: 103f8adb2f444c4c87d047817ff5b2f4
+              expression: 'avg(/AD Domain Controller by Dandan/service_state[RpcSs],300s)>0'
+              name: 'Service "Remote Procedure Call (RPC)" Down'
+              priority: AVERAGE
+        - uuid: a99c615f700c44b190f0332ec1129431
+          name: 'Service State: Windows Time'
+          type: ZABBIX_ACTIVE
+          key: 'service_state[W32Time]'
+          delay: '120'
+          tags:
+            - tag: Application
+              value: Services
+        - uuid: 9e0767bc992f4a9a8d7617869e297947
+          name: ReplSummary
+          key: 'system.run[powershell.exe repadmin /replsummary]'
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  // Função para processar o resultado do comando replsummary
+                  function processReplicationSummary(value) {
+                      // Separar o texto em linhas
+                      var lines = value.split("\n");
+                  
+                      // Variável para armazenar a data/hora da última replicação
+                      var replicationStartTime = "";
+                  
+                      // Filtrar as linhas desnecessárias e capturar a data/hora
+                      var filteredLines = [];
+                      for (var i = 0; i < lines.length; i++) {
+                          var line = lines[i].trim();
+                          if (line.startsWith("Replication Summary Start Time:")) {
+                              replicationStartTime = line.replace("Replication Summary Start Time:", "").trim();
+                          } else if (
+                              line !== "" &&
+                              !line.includes("Beginning data collection")
+                          ) {
+                              filteredLines.push(line);
+                          }
+                      }
+                  
+                      // Adicionar a data/hora ao início do texto processado
+                      if (replicationStartTime !== "") {
+                          filteredLines.unshift("Last Replication Time: " + replicationStartTime);
+                      }
+                  
+                      // Juntar as linhas filtradas em um único texto
+                      return filteredLines.join("\n");
+                  }
+                  
+                  // Retornar o texto processado
+                  return processReplicationSummary(value);
+          tags:
+            - tag: Application
+              value: DCDiag
+        - uuid: 8ff2430ec8b744339650fbb4a81e907d
+          name: 'Show Replicate'
+          key: 'system.run[powershell.exe repadmin /showrepl]'
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  // Função para processar o resultado do comando repadmin /showrepl
+                  function processShowRepl(value) {
+                      // Separar o texto em linhas
+                      var lines = value.split("\n");
+                  
+                      // Variáveis para armazenar informações úteis
+                      var dsaInfo = ""; // Armazena o nome do servidor
+                      var inboundNeighbors = []; // Lista de informações sobre os neighbors
+                      var currentPartition = ""; // Partição atual
+                  
+                      // Processar cada linha
+                      for (var i = 0; i < lines.length; i++) {
+                          var line = lines[i].trim();
+                  
+                          // Capturar o nome do servidor
+                          if (line.startsWith("BacaxaSPA\\")) {
+                              dsaInfo = line;
+                          }
+                          // Capturar partições
+                          else if (line.startsWith("DC=") || line.startsWith("CN=")) {
+                              currentPartition = line;
+                          }
+                          // Capturar informações dos neighbors
+                          else if (line.startsWith("Default-First-Site-Name\\")) {
+                              var neighborInfo = {
+                                  partition: currentPartition,
+                                  neighbor: line,
+                                  guid: "",
+                                  status: ""
+                              };
+                  
+                              // Próximas linhas contêm GUID e status
+                              if (lines[i + 1].trim().startsWith("DSA object GUID:")) {
+                                  neighborInfo.guid = lines[++i].trim().replace("DSA object GUID:", "").trim();
+                              }
+                              if (lines[i + 1].trim().startsWith("Last attempt @")) {
+                                  neighborInfo.status = lines[++i].trim();
+                              }
+                  
+                              // Adicionar neighbor à lista
+                              inboundNeighbors.push(neighborInfo);
+                          }
+                      }
+                  
+                      // Construir o resultado formatado
+                      var result = "Server: " + dsaInfo + "\n\nInbound Neighbors:\n";
+                  
+                      inboundNeighbors.forEach(function(neighbor) {
+                          result += "Partition: " + neighbor.partition + "\n";
+                          result += "  Neighbor: " + neighbor.neighbor + "\n";
+                          result += "  GUID: " + neighbor.guid + "\n";
+                          result += "  Status: " + neighbor.status + "\n\n";
+                      });
+                  
+                      return result.trim();
+                  }
+                  
+                  // Retornar o texto processado
+                  return processShowRepl(value);
+          tags:
+            - tag: Application
+              value: DCDiag

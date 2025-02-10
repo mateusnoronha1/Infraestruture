@@ -1,0 +1,19 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 039e09cef45145b3b4543f866014f088
+      template: 'Linux by DanDan'
+      name: 'Linux by DanDan'
+      templates:
+        - name: 'Linux block devices by Zabbix agent'
+        - name: 'Linux CPU by Zabbix agent'
+        - name: 'Linux filesystems by Zabbix agent'
+        - name: 'Linux generic by Zabbix agent'
+        - name: 'Linux memory by Zabbix agent'
+        - name: 'Linux network interfaces by Zabbix agent'
+        - name: 'Zabbix agent'
+      groups:
+        - name: Templates
